@@ -5,6 +5,8 @@ from scipy.spatial.distance import cdist
 from screeninfo import get_monitors # get monitor size
 from util import r2w,trim_scale,quat2r,rpy2r,pr2t
 
+DEFAULT_SIZE = 500
+
 # MuJoCo Parser class
 class MuJoCoParserClass(object):
     def __init__(self,
@@ -24,7 +26,15 @@ class MuJoCoParserClass(object):
         self._parse_xml()
         # Reset
         self.reset()
-        
+
+        # camera variables
+        self.cam_matrix = None
+        self.azimuth    = None
+        self.elevation  = None
+        self.distance   = None
+        self.lookat     = []
+        self._viewers = {}
+
     def _parse_xml(self):
         """
             Parse an xml file
@@ -125,7 +135,141 @@ class MuJoCoParserClass(object):
                 plt.title(title_str,fontsize=title_fs)
             plt.axis('off')
             plt.show()
-            
+
+    def viewer_setup(self):
+        """
+        This method is called when the viewer is initialized.
+        Optionally implement this method, if you need to tinker with camera position
+        and so forth.
+        """
+        pass
+
+    # -----------------------------
+    def _get_viewer(self, mode):
+        self.viewer = self._viewers.get(mode)
+        if self.viewer is None:
+            if mode == "human":
+                self.viewer = mujoco_py.MjViewer(self.sim)
+            elif mode == "rgb_array" or mode == "depth_array":
+                self.viewer = mujoco_py.MjRenderContextOffscreen(self.sim, -1)
+
+            self.viewer_setup()
+            self._viewers[mode] = self.viewer
+        return self.viewer
+
+    def render_scene(
+        self,
+        mode="human",
+        cam_infos=None,
+        width=DEFAULT_SIZE,
+        height=DEFAULT_SIZE,
+        depth_toggle=None,
+        camera_id=None,
+        camera_name=None,
+    ):
+        if mode == "rgb_array" or mode == "depth_array":
+            if camera_id is not None and camera_name is not None:
+                raise ValueError(
+                    "Both `camera_id` and `camera_name` cannot be"
+                    " specified at the same time."
+                )
+
+            no_camera_specified = camera_name is None and camera_id is None
+            if no_camera_specified:
+                camera_name = "track"
+
+            if camera_id is None and camera_name in self.model._camera_name2id:
+                camera_id = self.model.camera_name2id(camera_name)
+
+            self._get_viewer(mode).render(width, height, camera_id=camera_id)
+
+        if cam_infos is not None:
+            # Viewer setting
+            if cam_infos["cam_azimuth"] is not None:
+                self.viewer.cam.azimuth = cam_infos["cam_azimuth"]
+            if cam_infos["cam_distance"] is not None:
+                self.viewer.cam.distance = cam_infos["cam_distance"]
+            if cam_infos["cam_elevation"] is not None:
+                self.viewer.cam.elevation = cam_infos["cam_elevation"]
+            if cam_infos["cam_lookat"] is not None:
+                self.viewer.cam.lookat[0] = cam_infos["cam_lookat"][0]
+                self.viewer.cam.lookat[1] = cam_infos["cam_lookat"][1]
+                self.viewer.cam.lookat[2] = cam_infos["cam_lookat"][2]
+
+            self.cam_infos = cam_infos # {"cam_distance":self.cam_distance, "cam_azimuth":self.cam_azimuth, "cam_elevation":self.cam_elevation, "cam_lookat":self.lookat}
+
+        for _ in range(10):
+            img = self.viewer.read_pixels(width=width,height=height,depth=depth_toggle)
+        if depth_toggle:
+            img = cv2.flip(cv2.rotate(img[1],cv2.ROTATE_180),1)     # 0:up<->down, 1:left<->right
+        else:
+            img = cv2.flip(cv2.rotate(img,cv2.ROTATE_180),1)        # 0:up<->down, 1:left<->right
+
+        return img
+
+    def set_cam_infos(self, 
+                    cam_distance=None,
+                    cam_azimuth=None,
+                    cam_elevation=None,
+                    cam_lookat=None):
+        """
+            Set camera inforamtions (just setting)
+        """
+        # Viewer setting
+        if cam_distance is not None:
+            self.distance = cam_distance
+        if cam_azimuth is not None:
+            self.azimuth = cam_azimuth
+        if cam_elevation is not None:
+            self.elevation = cam_elevation
+        if cam_lookat is not None:
+            self.lookat = [cam_lookat[i] for i in range(3)]
+            # self.lookat[0] = cam_lookat[0]
+            # self.lookat[1] = cam_lookat[1]
+            # self.lookat[2] = cam_lookat[2]
+
+        self.cam_infos = {"cam_distance":self.distance, "cam_azimuth":self.azimuth, "cam_elevation":self.elevation, "cam_lookat":self.lookat}
+
+        return self.cam_infos
+
+    def depth_2_meters(self, depth_image):
+        """
+        Converts the depth array delivered by MuJoCo (values between 0 and 1) into actual m values.
+
+        Args:
+            depth: The depth array to be converted.
+        """
+
+        extend = self.model.stat.extent
+        near = self.model.vis.map.znear * extend
+        far = self.model.vis.map.zfar * extend
+        depth_scale = (1-near/far)
+        depth_image = [i * depth_scale for i in depth_image]
+        depth_image = [near / (1-i) for i in depth_image]
+
+        return depth_image
+
+    def camera_matrix_and_pose(self, width, height, camera_name):
+        """
+        Initializes all camera parameters that only need to be calculated once.
+        """
+
+        cam_id = self.model.camera_name2id(camera_name)
+        # Get field of view, default value is 45.
+        fovy = self.model.cam_fovy[cam_id]
+        # Calculate focal length
+        f = 0.5 * height / np.tan(fovy * np.pi / 360)
+        # Construct camera matrix
+        self.cam_matrix = np.array(((f, 0, width / 2), (0, f, height / 2), (0, 0, 1)))
+        # Rotation of camera in world coordinates
+        self.cam_rot_mat = self.model.cam_mat0[cam_id]
+        self.cam_rot_mat = np.reshape(self.cam_rot_mat, (3, 3))
+        # Position of camera in world coordinates
+        self.cam_pos = self.model.cam_pos0[cam_id]
+
+        return self.cam_matrix, self.cam_rot_mat, self.cam_pos, 
+
+
     def reset(self,RESET_GLFW=False):
         """
              Reset simulation
