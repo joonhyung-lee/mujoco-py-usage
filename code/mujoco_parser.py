@@ -32,7 +32,7 @@ class MuJoCoParserClass(object):
         self.azimuth    = None
         self.elevation  = None
         self.distance   = None
-        self.lookat     = []
+        self.lookat     = np.zeros(3)
         self._viewers = {}
 
     def _parse_xml(self):
@@ -167,6 +167,10 @@ class MuJoCoParserClass(object):
         camera_id=None,
         camera_name=None,
     ):
+        """
+            Render a scene that camera is now see-ing.
+            And applying Camera pose: cam_infos
+        """
         if mode == "rgb_array" or mode == "depth_array":
             if camera_id is not None and camera_name is not None:
                 raise ValueError(
@@ -183,8 +187,8 @@ class MuJoCoParserClass(object):
 
             self._get_viewer(mode).render(width, height, camera_id=camera_id)
 
+        # Viewer setting
         if cam_infos is not None:
-            # Viewer setting
             if cam_infos["cam_azimuth"] is not None:
                 self.viewer.cam.azimuth = cam_infos["cam_azimuth"]
             if cam_infos["cam_distance"] is not None:
@@ -198,8 +202,9 @@ class MuJoCoParserClass(object):
 
             self.cam_infos = cam_infos # {"cam_distance":self.cam_distance, "cam_azimuth":self.cam_azimuth, "cam_elevation":self.cam_elevation, "cam_lookat":self.lookat}
 
-        for _ in range(10):
+        for _ in range(10):     # for updating scene bug
             img = self.viewer.read_pixels(width=width,height=height,depth=depth_toggle)
+
         if depth_toggle:
             img = cv2.flip(cv2.rotate(img[1],cv2.ROTATE_180),1)     # 0:up<->down, 1:left<->right
         else:
@@ -223,11 +228,19 @@ class MuJoCoParserClass(object):
         if cam_elevation is not None:
             self.elevation = cam_elevation
         if cam_lookat is not None:
-            self.lookat = [cam_lookat[i] for i in range(3)]
+            self.lookat = np.array([cam_lookat[i] for i in range(3)])
             # self.lookat[0] = cam_lookat[0]
             # self.lookat[1] = cam_lookat[1]
             # self.lookat[2] = cam_lookat[2]
 
+        self.cam_infos = {"cam_distance":self.distance, "cam_azimuth":self.azimuth, "cam_elevation":self.elevation, "cam_lookat":self.lookat}
+
+        return self.cam_infos
+
+    def get_cam_infos(self):
+        """
+            Get Camera informations about (distance, azimuth, elevation, lookat)
+        """
         self.cam_infos = {"cam_distance":self.distance, "cam_azimuth":self.azimuth, "cam_elevation":self.elevation, "cam_lookat":self.lookat}
 
         return self.cam_infos
@@ -249,10 +262,14 @@ class MuJoCoParserClass(object):
 
         return depth_image
 
-    def camera_matrix_and_pose(self, width, height, camera_name):
+    def camera_matrix_and_pose(self, width, height, camera_name=None):
         """
         Initializes all camera parameters that only need to be calculated once.
         """
+
+        no_camera_specified = camera_name is None
+        if no_camera_specified:
+            camera_name = "track"
 
         cam_id = self.model.camera_name2id(camera_name)
         # Get field of view, default value is 45.
@@ -268,7 +285,6 @@ class MuJoCoParserClass(object):
         self.cam_pos = self.model.cam_pos0[cam_id]
 
         return self.cam_matrix, self.cam_rot_mat, self.cam_pos, 
-
 
     def reset(self,RESET_GLFW=False):
         """
@@ -868,6 +884,24 @@ def depth2pcd(depth):
     return np.array(points)
 
 
+from matplotlib import animation
+from IPython.display import display, HTML
+
+def display_animation(anim):
+    plt.close(anim._fig)
+    return HTML(anim.to_jshtml())
+
+def display_frames_as_gif(frame_list, filename):
+    patch = plt.imshow(frame_list[0])
+    plt.axis('off')
+    def animate(i):
+        patch.set_data(frame_list[i])
+    anim = animation.FuncAnimation(
+        plt.gcf(),animate,frames=len(frame_list),interval=20)
+    display(display_animation(anim))
+    # plt.gcf().savefig("gifs.gif")
+    animation.Animation.save(anim, filename, fps=30)
+print ("Done.")
 
 
 
