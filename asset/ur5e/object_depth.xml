@@ -70,6 +70,8 @@ Control Engineering / Automation Engineering
         <mesh name="outer_knuckle_coarse" file="outer_knuckle_coarse.STL" />
         <mesh name="outer_finger_coarse" file="outer_finger_coarse.STL" />
 
+        <!-- <mesh name="apriltag"         file="April_Block.stl"   /> -->
+
         <!--Textures-->
         <texture name="ur5_tex"     type="2d"       builtin="flat" height="32" width="32" rgb1="0.45 0.45 0.45" />
         <texture name="gripper_tex" type="2d"       builtin="flat" height="32" width="32" rgb1="0.45 0.45 0.45" rgb2="0 0 0"/>
@@ -78,18 +80,26 @@ Control Engineering / Automation Engineering
         <texture name="texgeom"     type="cube"     builtin="flat" mark="cross" width="127" height="1278" rgb1="0.8 0.6 0.4" rgb2="0.8 0.6 0.4" markrgb="1 1 1" random="0.01" />
         <texture name="floor_tex"   type="2d"        builtin="checker" rgb1=".2 .3 .4" rgb2=".1 .2 .3" width="100" height="100" />
         <texture name="wood"        type="cube"     file="wood2.png"/>
+        <texture name="checker"     type="cube"      builtin="checker" rgb1=".0 .0 .0" rgb2="1.0 1.0 1.0" width="100" height="100" />
         <texture name="metal"        type="cube"     file="metal.png"/>
         <texture name="metal2"        type="cube"     file="metal2.png"/>
+        <texture name="apriltag"     type="cube"     file="resized_image.png"/>     <!-- april -->
+        <texture name="apriltag_36h11"     type="cube"     file="resized_image.png"/>  <!-- tag36_11_00000 -->
 
         <!--Materials-->
         <material name="ur5_mat"        texture="ur5_tex"   shininess="0.9" specular="0.75" reflectance="0.3"/>
         <material name="gripper_mat"    texture="gripper_tex"   shininess="0.9" specular="0.75" reflectance="0.4"/>
         <material name='floor_mat'      texture="floor_tex"  shininess="0.8" texrepeat="10 10" specular="0.7"  reflectance="0.5" />
+        <material name='floor_checker'      texture="checker"  shininess="0.8" texrepeat="10 10" specular="0.7"  reflectance="0.5" />
         <material name='geom'           texture="texgeom"   texuniform="true" />
         <material name="bench_mat"      texture="metal"   shininess="0.1" specular="0.5" reflectance="0.2"/>
         <material name="bench_mat2"      texture="metal2"   shininess="0.1" specular="0.5" reflectance="0.2"/>
 
         <material name="tablecube"      texture="wood" rgba=".8 .8 .8 1"/>
+        <material name="tablecube_new"  texture="checker"   texrepeat="10 10"   rgba=".8 .8 .8 1"/>
+        <material name="tablecube_apriltag"  texture="apriltag"   texrepeat="10 10"   rgba=".8 .8 .8 1"/>
+        <material name="tablecube_apriltag_36h11"  texture="apriltag_36h11" rgba=".8 .8 .8 1"/>
+
     </asset>
 
     <!--Contacts-->
@@ -108,17 +118,34 @@ Control Engineering / Automation Engineering
     <!--MODEL DESCRIPTION-->
     <worldbody>
         <!--Lighting parameters-->
-        <light name="light3" mode="targetbody" target="box_link" directional="true" pos="-1 0 5" />
+        <light name="light3" mode="targetbody" target="box_link" directional="true" pos="-1 0 7" />
         <!-- <light name="light3" mode="targetbody" target="box_link" directional="true" pos="1 1 3" /> -->
+
         <!--Camera parameters-->
         <camera name="main1" mode="fixed" target="ee_link" pos="2 2 2.7" axisangle="2 2 -2 1"/>
         <camera name="top_down" mode="fixed" target="ee_link" pos="0 -0.6 2.0" axisangle="2 2 2 0"/>
         <camera name="side" mode="fixed" target="ee_link" pos="0.8 -0.6 1.0" quat="0.5 0.5 0.5 0.5"/>
         <camera name="test" mode="fixed" target="ee_link" pos="0 0.0823 0" quat="0.707107 0 0 0.707107"/>
+
+        <!-- bird view -->
+        <camera mode="fixed" name="birdview" pos="-0.2 0 3.0" quat="0.7071 0 0 0.7071"/>
+        <!-- user-defined view -->
+        <camera mode="fixed" name="camera-2" pos="0.8 0.1 2.5" quat="0.7071 0 0 0.7071"/>
+        <!-- agent view -->
+        <camera mode="fixed" name="agentview" pos="0.5 0 1.35" quat="0.653 0.271 0.271 0.653"/>
+
+        <!-- side view -->
+        <camera mode="fixed" name="sideview" pos="-0.05651774593317116 1.2761224129427358 1.4879572214102434" quat="0.009905065491771751 0.006877963156909582 0.5912228352893879 0.806418094001364" />
+
+        <!-- target E.E. -->
+        <camera name="ee-follower" mode="targetbody" target="ee_link" pos="0.8 0.0 1.5" quat="0.707107 0 0 0.707107"/>
+                                                                <!-- pos="0 0.0823 0" quat="0.707107 0 0 0.707107" -->
         <!--Floor Property-->
         <geom name='floor' material="floor_mat" pos='0 0 0' size='2.5 2.5 0.1'  type='plane' />
+        <geom name='floor_checker' material="floor_checker" pos='0.53, 0.1, 0.84' size='0.5 0.5 0.5'  type='plane' />
 
-        <body name="table" pos="0.82 0 0.0" euler="0 0 0">
+
+        <body name="table" pos="0.98 0 0.0" euler="0 0 0">      <!-- added 0.16 about x axis -->
             <geom size="0.45 0.6 .37" pos ="0. 0. 0.37" type="box" rgba="0.65 0.56 0.43 1"/>
             <inertial pos="0 0 0" mass="1000" diaginertia="0 0 0" />
         </body>
@@ -133,6 +160,9 @@ Control Engineering / Automation Engineering
             <geom size=".36 .36 .395" pos ="0 0 0" type="box" material="bench_mat2"/>
             <inertial pos="0 0 0" mass="1000" diaginertia="0 0 0" />
             <body name="base_link" pos="0.18 0 0.395">
+
+            <!-- target E.E. -->
+            <camera name="cam-mount" mode="trackcom" pos="0 -3 .5" xyaxes="1 0 0 0 0 1"/>
                 <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="4" diaginertia="0.0072 0.00443333 0.00443333" />
                 <geom type="mesh"  mesh="base" material="ur5_mat"/>
                 <body name="shoulder_link" pos="0 0 0.089159">
@@ -203,6 +233,14 @@ Control Engineering / Automation Engineering
                 </body>
         </body>
 
+        <body name="box_checker" pos="0.73 0.3 0.84">    <!-- (x, y, z) pose -->
+            <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_checker_x" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
+            <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_checker_Y" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
+            <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_checker_z" pos="0 0 0" range="-2. 2." stiffness="0" type="slide"/>
+            <joint armature="0" damping="0" name="box_checker_rot" pos="0 0 0" stiffness="0" type="ball"/>
+            <geom name="box_checker" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.01" type="box"/>
+        </body>
+
         <body name="box_1" pos="0.83 -0.3 0.84">    <!-- (x, y, z) pose -->
             <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_1_x" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_1_y" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
@@ -244,6 +282,14 @@ Control Engineering / Automation Engineering
             <geom name="cylinder_2" pos="0 0 0" material="geom" size="0.04 0.06" type="cylinder"/>
             <inertial pos="0 0 0.01" mass="0.2" diaginertia="0 0 0" />
         </body>
+
+        <!-- <body name="apriltag" pos="0.83 0.1 0.84">
+            <joint armature="0" axis="1 0 0" damping="0" limited="true" name="apriltag_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/>
+            <joint armature="0" axis="0 1 0" damping="0" limited="true" name="apriltag_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/>
+            <joint armature="0" axis="0 0 1" damping="0" limited="true" name="apriltag_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/>
+            <geom name="apriltag" pos="0 0 0" material="geom" size="0.04 0.06" type="apriltag"/>
+            <inertial pos="0 0 0.01" mass="0.2" diaginertia="0 0 0" />
+        </body> -->
 
     </worldbody>
 
