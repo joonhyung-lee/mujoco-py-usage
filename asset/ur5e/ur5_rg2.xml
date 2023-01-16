@@ -64,11 +64,11 @@ Control Engineering / Automation Engineering
         <mesh name="link_2"         file="link_2.STL"   />
         <mesh name="link_3"         file="link_3.STL"   />
 
-        <mesh name="robotiq_85_base_link_coarse" file="robotiq_85_base_link_coarse.STL" />
+        <!-- <mesh name="robotiq_85_base_link_coarse" file="robotiq_85_base_link_coarse.STL" />
         <mesh name="inner_knuckle_coarse" file="inner_knuckle_coarse.STL" />
         <mesh name="inner_finger_coarse" file="inner_finger_coarse.STL" />
         <mesh name="outer_knuckle_coarse" file="outer_knuckle_coarse.STL" />
-        <mesh name="outer_finger_coarse" file="outer_finger_coarse.STL" />
+        <mesh name="outer_finger_coarse" file="outer_finger_coarse.STL" /> -->
 
         <mesh name="rg2_gripper_base_link" file="rg2_gripper_base_link.STL" />
         <mesh name="rg2_gripper_finger1_finger_link" file="rg2_gripper_finger1_finger_link.STL" />
@@ -109,7 +109,21 @@ Control Engineering / Automation Engineering
         <exclude body1="forearm_link" body2="wrist_1_link"/>
         <exclude body1="wrist_1_link" body2="wrist_2_link"/>
         <exclude body1="wrist_2_link" body2="wrist_3_link"/>
-        <exclude body1="ee_link" body2="wrist_3_link"/>
+        <exclude body1="rg2_gripper_base_link" body2="wrist_3_link"/>
+
+        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger1_finger_link"/>
+        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger2_finger_link"/>
+        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger1_inner_knuckle_link"/>
+        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger2_inner_knuckle_link"/>
+        
+        <exclude body1="rg2_gripper_finger1_finger_link" body2="rg2_gripper_finger1_inner_knuckle_link"/>
+        <exclude body1="rg2_gripper_finger2_finger_link" body2="rg2_gripper_finger2_inner_knuckle_link"/>
+
+        <exclude body1="rg2_gripper_finger1_inner_knuckle_link" body2="rg2_gripper_finger1_finger_tip_link"/>
+        <exclude body1="rg2_gripper_finger2_inner_knuckle_link" body2="rg2_gripper_finger2_finger_tip_link"/>
+        <exclude body1="rg2_gripper_finger1_finger_link" body2="rg2_gripper_finger1_finger_tip_link"/>
+        <exclude body1="rg2_gripper_finger2_finger_link" body2="rg2_gripper_finger2_finger_tip_link"/>
+
     </contact>
 
 
@@ -119,10 +133,10 @@ Control Engineering / Automation Engineering
         <light name="light3" mode="targetbody" target="box_link" directional="true" pos="-1 0 5" />
         <!-- <light name="light3" mode="targetbody" target="box_link" directional="true" pos="1 1 3" /> -->
         <!--Camera parameters-->
-        <camera name="main1" mode="fixed" target="ee_link" pos="2 2 2.7" axisangle="2 2 -2 1"/>
-        <camera name="top_down" mode="fixed" target="ee_link" pos="0 -0.6 2.0" axisangle="2 2 2 0"/>
-        <camera name="side" mode="fixed" target="ee_link" pos="0.8 -0.6 1.0" quat="0.5 0.5 0.5 0.5"/>
-        <camera name="test" mode="fixed" target="ee_link" pos="0 0.0823 0" quat="0.707107 0 0 0.707107"/>
+        <camera name="main1" mode="fixed" target="wrist_3_link" pos="2 2 2.7" axisangle="2 2 -2 1"/>
+        <camera name="top_down" mode="fixed" target="wrist_3_link" pos="0 -0.6 2.0" axisangle="2 2 2 0"/>
+        <camera name="side" mode="fixed" target="wrist_3_link" pos="0.8 -0.6 1.0" quat="0.5 0.5 0.5 0.5"/>
+        <camera name="test" mode="fixed" target="wrist_3_link" pos="0 0.0823 0" quat="0.707107 0 0 0.707107"/>
         <!--Floor Property-->
         <geom name='floor' material="floor_mat" pos='0 0 0' size='2.5 2.5 0.1'  type='plane' />
 
@@ -167,43 +181,44 @@ Control Engineering / Automation Engineering
                                         <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="0.1879" diaginertia="0.033822 0.0171365 0.0171365" />
                                         <joint name="wrist_3_joint" class="UR5e" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
                                         <geom type="mesh"  mesh="wrist3" material="ur5_mat"/>
-                                        <body name="ee_link" pos="0 0.0823 0" quat="0.707107 0 0 0.707107">
-                                            <inertial pos="-0.01 0 0" mass="0.001" diaginertia="1.66667e-08 1.66667e-08 1.66667e-08" />
-                                            <geom size="0.005 0.005 0.005" pos="-0.01 0 0" type="box" />
                                         <!--GRIPPER-->
-                                            <!-- <joint name="ee_to_base" pos="0 0 0" axis="1 0 0" limited="true" range="0 0" /> -->
-                                            <body name="rg2_gripper_base_link" pos="0 0 0" quat="0.5 0.5 0.5 0.5 ">
-                                                <inertial pos="-0.000118835633453291 4.70054905894546E-06 0.0572680906518555"  quat="0.707058 0.00723369 0.00723345 0.707081" mass="0.199035856566616" diaginertia="0.000170600248402307 0.000213152093040191 5.59878626220752E-05" />
-                                                <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_base_link" />
-                                                <joint name="gripper_finger1_joint" class="GRIPPER" pos="0.0169 -0.0103 0.105" axis="0 1 0" limited="true" range="-1 1" />
-                                                <body name="rg2_gripper_finger1_finger_link" pos="0.0127 0 0.0693075">
-                                                    <inertial pos="0.0170975 -3.93809e-10 0.0224918"   quat="0.947655 0 -0.319297 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
-                                                    <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger1_finger_link" />
-                                                    <joint name="gripper_finger1_inner_knuckle_joint" class="GRIPPER" pos="0.0074 -0.01 0.1215" axis="0 1 0" limited="true" range="-1 1" />
-                                                    <body name="rg2_gripper_finger1_inner_knuckle_link" pos="0.0345853 0 0.045497" >
-                                                        <inertial pos="0.00602756 0 0.00669926"  quat="0.699065 0.106339 0.106339 0.699065" mass="0.00724255" diaginertia="1.70064e-06 1.58577e-06 3.69621e-07" />
-                                                        <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger1_inner_knuckle_link" />
-                                                        <body name="rg2_gripper_finger1_finger_tip_link" pos="-0.0127 0 0.0693075" quat="0 0 0 1">
-                                                            <inertial pos="0.0168606 3.93808e-10 0.02267"  quat="0.949317 0 -0.314322 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
-                                                            <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger1_finger_tip_link" />
-                                                            <joint name="gripper_finger1_finger_tip_joint" class="GRIPPER" pos="0.002 0.0042 0.054964" axis="0 1 0" limited="true" range="-1 1" />
-                                                        </body>
-                                                    </body>
+                                        <body name="rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
+                                            <inertial pos="-0.000118835633453291 4.70054905894546E-06 0.0572680906518555"  quat="0.707058 0.00723369 0.00723345 0.707081" mass="0.199035856566616" diaginertia="0.000170600248402307 0.000213152093040191 5.59878626220752E-05" />
+                                            <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_base_link" />
+
+                                            <body name="rg2_gripper_finger1_finger_link" pos="0.0169 0.0103 0.105" quat="0 0 0 1">
+                                                <inertial pos="0.0170975 -3.93809e-10 0.0224918"   quat="0.947655 0 -0.319297 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
+                                                <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger1_finger_link" />
+                                                <joint name="gripper_finger1_joint" class="GRIPPER" pos="0. 0. 0." axis="0 1 0" limited="true" range="-1 1" />
+                                            </body>
+                                            
+                                            <body name="rg2_gripper_finger1_inner_knuckle_link" pos="0.0074 0.01 0.1215" quat="0 0 0 1">
+                                                <inertial pos="0.00602756 0 0.00669926"  quat="0.699065 0.106339 0.106339 0.699065" mass="0.00724255" diaginertia="1.70064e-06 1.58577e-06 3.69621e-07" />
+                                                <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger1_inner_knuckle_link" />
+                                                <joint name="gripper_finger1_inner_knuckle_joint" class="GRIPPER" pos="0. 0. 0." axis="0 1 0" limited="true" range="-1 1" />
+
+                                                <body name="rg2_gripper_finger1_finger_tip_link" pos="-0.0009 0.01449 0.055" quat="0 0 0 1">
+                                                    <inertial pos="0.0168606 3.93808e-10 0.02267"  quat="0.949317 0 -0.314322 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
+                                                    <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger1_finger_tip_link" />
+                                                    <joint name="gripper_finger1_finger_tip_joint" class="GRIPPER" pos="0. 0. 0." axis="0 1 0" limited="true" range="-1 1" />
                                                 </body>
-                                                <body name="rg2_gripper_finger2_finger_link" pos="-0.0127 0 0.0693075">
-                                                    <inertial pos="0.0170975 -3.93809e-10 0.0224918"   quat="0.947655 0 -0.319297 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
-                                                    <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger2_finger_link" />
-                                                    <joint name="gripper_finger2_joint" class="GRIPPER" pos="-0.0171 -0.0103 0.105" axis="0 1 0" limited="true" range="-1 1" />
-                                                    <body name="rg2_gripper_finger2_inner_knuckle_link" pos="-0.0345853 0 0.045497" >
-                                                        <inertial pos="0.00602756 0 0.00669926"  quat="0.699065 0.106339 0.106339 0.699065" mass="0.00724255" diaginertia="1.70064e-06 1.58577e-06 3.69621e-07" />
-                                                        <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger2_inner_knuckle_link" />
-                                                        <joint name="gripper_finger2_inner_knuckle_joint" class="GRIPPER" pos="-0.0076 -0.01 0.1215" axis="0 1 0" limited="true" range="-1 1" />
-                                                        <body name="rg2_gripper_finger2_finger_tip_link" pos="-0.0127 0 0.0693075" quat="0 0 0 1">
-                                                            <inertial pos="0.0168606 3.93808e-10 0.02267"  quat="0.949317 0 -0.314322 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
-                                                            <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger2_finger_tip_link" />
-                                                            <joint name="gripper_finger2_finger_tip_joint" class="GRIPPER" pos="-0.002 0.0042 0.054964" axis="0 1 0" limited="true" range="-1 1" />
-                                                        </body>
-                                                    </body>
+                                            </body>
+
+                                            <body name="rg2_gripper_finger2_finger_link" pos="-0.0171 0.0103 0.105" quat="0 0 0 1">
+                                                <inertial pos="0.0170975 -3.93809e-10 0.0224918"   quat="0.947655 0 -0.319297 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
+                                                <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger2_finger_link" />
+                                                <joint name="gripper_finger2_joint" class="GRIPPER" pos="0. 0. 0." axis="0 1 0" limited="true" range="-1 1" />
+                                            </body>
+
+                                            <body name="rg2_gripper_finger2_inner_knuckle_link" pos="-0.0076 0.01 0.1215" quat="0 0 0 1">
+                                                <inertial pos="0.00602756 0 0.00669926"  quat="0.699065 0.106339 0.106339 0.699065" mass="0.00724255" diaginertia="1.70064e-06 1.58577e-06 3.69621e-07" />
+                                                <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger2_inner_knuckle_link" />
+                                                <joint name="gripper_finger2_inner_knuckle_joint" class="GRIPPER" pos="0. 0. 0." axis="0 1 0" limited="true" range="-1 1" />
+                            
+                                                <body name="rg2_gripper_finger2_finger_tip_link" pos="0.00084055833321731 0.01449 0.055" quat="0 0 0 1">
+                                                    <inertial pos="0.0168606 3.93808e-10 0.02267"  quat="0.949317 0 -0.314322 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />
+                                                    <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_finger2_finger_tip_link" />
+                                                    <joint name="gripper_finger2_finger_tip_joint" class="GRIPPER" pos="0. 0. 0." axis="0 1 0" limited="true" range="-1 1" />
                                                 </body>
                                             </body>
                                         </body>
@@ -218,7 +233,7 @@ Control Engineering / Automation Engineering
             <body name="base" pos="0 0 0" quat="1.7949e-09 0 0 -1">
                 <inertial pos="0 0 0" quat="1.7949e-09 0 0 -1" mass="0" diaginertia="0 0 0" />
             </body>
-        <body name="box_1" pos="0.83 -0.3 0.84">    <!-- (x, y, z) pose -->
+        <body name="box_1" pos="1.4 -0.3 0.84">    <!-- (x, y, z) pose -->
             <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_1_x" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_1_y" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_1_z" pos="0 0 0" range="-2. 2." stiffness="0" type="slide"/>
@@ -226,7 +241,7 @@ Control Engineering / Automation Engineering
             <geom name="box_1" pos="0 0 0" material="tablecube" size="0.0407 0.0407 0.0607" type="box"/>
         </body>
 
-        <body name="box_2" pos="0.63 0.0 0.82">
+        <body name="box_2" pos="1.4 0.4 0.82">
             <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_2_x" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_2_y" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_2_z" pos="0 0 0" range="-2. 2." stiffness="0" type="slide"/>
@@ -235,7 +250,7 @@ Control Engineering / Automation Engineering
         </body>
 
 
-        <body name="box_3" pos="1.13 0.1 0.80">
+        <body name="box_3" pos="1.4 -0.4 0.80">
             <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_3_x" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_3_y" pos="0 0 0" range="-5. 5." stiffness="0" type="slide"/>
             <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_3_z" pos="0 0 0" range="-2. 2." stiffness="0" type="slide"/>
@@ -243,7 +258,7 @@ Control Engineering / Automation Engineering
             <geom name="box_3" pos="0 0 0" material="tablecube" size="0.0407 0.0407 0.0607" type="box"/>    <!-- size = (width, length, height) -->
         </body>
 
-        <body name="cylinder_1" pos="1.03 0.3 0.84">
+        <body name="cylinder_1" pos="1.4 0.3 0.84">
             <joint armature="0" axis="1 0 0" damping="0" limited="true" name="cylinder_1_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/>
             <joint armature="0" axis="0 1 0" damping="0" limited="true" name="cylinder_1_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/>
             <joint armature="0" axis="0 0 1" damping="0" limited="true" name="cylinder_1_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/>
@@ -252,7 +267,7 @@ Control Engineering / Automation Engineering
         </body>
 
 
-        <body name="cylinder_2" pos="0.83 0.1 0.84">
+        <body name="cylinder_2" pos="1.4 0.1 0.84">
             <joint armature="0" axis="1 0 0" damping="0" limited="true" name="cylinder_2_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/>
             <joint armature="0" axis="0 1 0" damping="0" limited="true" name="cylinder_2_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/>
             <joint armature="0" axis="0 0 1" damping="0" limited="true" name="cylinder_2_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/>
@@ -302,8 +317,12 @@ Control Engineering / Automation Engineering
 
         <!-- <tendon name="finger1_12_cpl"  tendon1="finger1_12_cpl"/> -->
         <!-- <tendon name="finger1_23_cpl"  tendon1="finger1_23_cpl"/> -->
+        <joint name="fingers" joint1="gripper_finger2_joint" joint2="gripper_finger2_inner_knuckle_joint" polycoef="0 1 0 0 0"/>
+        <joint name="fingers2" joint1="gripper_finger1_joint" joint2="gripper_finger1_inner_knuckle_joint" polycoef="0 1 0 0 0"/>
+        <joint name="fingers3" joint1="gripper_finger1_joint" joint2="gripper_finger2_joint" polycoef="0 -1 0 0 0"/>
+        <joint name="fingers4" joint1="gripper_finger1_inner_knuckle_joint" joint2="gripper_finger1_finger_tip_joint" polycoef="0 1 0 0 0"/>
+        <joint name="fingers5" joint1="gripper_finger2_inner_knuckle_joint" joint2="gripper_finger2_finger_tip_joint" polycoef="0 1 0 0 0"/>
 
-        <!-- <joint name="fingers" joint1="base_to_rik" joint2="base_to_lik" polycoef="0 1 0 0 0"/> -->
     </equality>
 
 
@@ -323,11 +342,7 @@ Control Engineering / Automation Engineering
         <motor name='wrist_1_T' ctrllimited="true" ctrlrange="-1 1" joint='wrist_1_joint' gear="101"/>  <!--range -28 28-->
         <motor name='wrist_2_T' ctrllimited="true" ctrlrange="-1 1" joint='wrist_2_joint' gear="101"/>
         <motor name='wrist_3_T' ctrllimited="true" ctrlrange="-1 1" joint='wrist_3_joint' gear="101"/>
-
-
-
-
-        <!-- <motor name='gripper_motor' ctrllimited="true" ctrlrange="-1 1" joint='base_to_lik' gear="101"/> -->
+        <motor name='gripper_motor' ctrllimited="true" ctrlrange="-1 1" joint='gripper_finger1_joint' gear="101"/>
 
         <!--<velocity name='shoulder_pan_v' class="UR5" joint='shoulder_pan_joint' kv="10"/>-->
         <!--<velocity name='shoulder_lift_v' class="UR5" joint='shoulder_lift_joint' />-->
