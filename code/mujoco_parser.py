@@ -806,6 +806,37 @@ def get_env_obj_poses(env,obj_names):
         obj_Rs[o_idx,:,:] = R
     return obj_ps,obj_Rs
 
+## Get/Set Robot Joint variables
+def get_env_joint_names(env,prefix='ur_'):
+    """
+        Accumulate robot joint names by assuming that the prefix is 'ur_'
+    """
+    joint_names = [x for x in env.joint_names if x[:len(prefix)]==prefix]
+
+    return joint_names
+
+def print_env_joint_infos(env, prefix='ur_'):
+    joint_names = get_env_obj_names(env, prefix) # available objects
+    for joint_idx,joint_name in enumerate(joint_names):
+        qpos_addr = env.sim.model.get_joint_qpos_addr(joint_name)
+        print ("[%d/%d] joint_name:[%s]"%(joint_idx,len(joint_names),joint_name))
+        print ("[%d/%d] joint_configurations:[%0.3f]"%(joint_idx,len(joint_names),env.sim.data.qpos[qpos_addr]))    
+
+def set_env_joint_configuration(env, configurations, prefix='ur_'):
+    """
+        Set robot joint poses 
+    """
+    joint_names = get_env_joint_names(env, prefix=prefix)
+    assert len(configurations) == len(joint_names)
+
+    for joint_idx,joint_name in enumerate(joint_names):
+        # Get address
+        qpos_addr = env.sim.model.get_joint_qpos_addr(joint_name)
+
+        # Set configurations
+        env.sim.data.qpos[qpos_addr] = configurations[joint_idx]
+
+
 def random_spawn_objects(
     env,
     prefix     = 'obj_',
