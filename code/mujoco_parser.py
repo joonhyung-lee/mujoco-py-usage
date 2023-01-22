@@ -35,6 +35,9 @@ class MuJoCoParserClass(object):
         self.lookat     = np.zeros(3)
         self._viewers = {}
 
+        self.render_width = 1500
+        self.render_height = 1000
+
     def _parse_xml(self):
         """
             Parse an xml file
