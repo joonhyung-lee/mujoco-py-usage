@@ -177,8 +177,7 @@ Control Engineering / Automation Engineering
             <joint type="hinge" axis="1 0 0" damping="0.007" name="box_checker_x" />
             <joint type="hinge" axis="0 1 0" damping="0.007" name="box_checker_y" />
             <joint type="hinge" axis="0 0 1" damping="0.007" name="box_checker_z" />
-            <geom name="box_checker" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.07" type="box"/>
-            <inertial pos="0 0 0" quat="1 0 1 1" mass="0.2" diaginertia="0 0 0" />
+            <geom name="box_checker" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.01" type="box"/>
         </body>
 
         <!-- Non-prhensile Task Objects -->
