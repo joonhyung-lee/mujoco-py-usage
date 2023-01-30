@@ -9,6 +9,8 @@ And this is a package for RL task using a manipulator in Mujoco.
 - Randomly spawn Obejct: demo_ur_03_object.ipynb
 - Get PointCloud data at MuJoCo sim: demo_ur_04_pointcloud.ipynb
 - Set robot joint configurations: demo_ur_05_control.ipynb
+- Triangulation about multiple view: demo_ur_06_triangulation.ipynb
+- Extrinsic calibration(Solve Perspective-n-Point algorithm): demo_ur_07_pnp.ipynb
 
 ### Others
 - Solving AX=XB, Extrinsic Calibration: demo_calibration.ipynb
