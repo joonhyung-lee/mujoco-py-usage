@@ -809,6 +809,40 @@ def get_env_obj_poses(env,obj_names):
         obj_Rs[o_idx,:,:] = R
     return obj_ps,obj_Rs
 
+## Get Robot Body names.
+def get_env_body_names(env,prefix='ur_'):
+    """
+        Accumulate robot body names by assuming that the prefix is 'ur_'
+    """
+    body_names = [x for x in env.body_names if x[:len(prefix)]==prefix]
+
+    return body_names
+    
+def get_base2ee_matrix(env, link_prefix='ur_', verbose=False):
+    """
+        In AX=XB Equation, (extrinsic calibration) 
+        Get matrix about B that represents transformation matrix [Robot base to Robot End-Effector].
+    """
+    # ur_links = ['ur_base_link', 'ur_shoulder_link', 'ur_upper_arm_link', 'ur_forearm_link', 'ur_wrist_1_link', 'ur_wrist_2_link', 'ur_wrist_3_link']
+
+    link_names = get_env_body_names(env, link_prefix)
+    T_links = []
+
+    for idx, link in enumerate(link_names):
+        if verbose == True:
+            print(link)
+        p_link = env.get_p_body(body_name=link)  # 3x3
+        R_link = env.get_R_body(body_name=link)  # 3x1
+        T_link = cv2.hconcat((R_link, p_link))      # 3x4
+        T_link = np.vstack((T_link, np.array([0,0,0,1])))   # 4x4
+        
+        T_links.append(T_link)
+
+    for i in range(len(T_links)-1):
+        T_bs2end = np.matmul(T_links[i], T_links[i+1])
+    
+    return T_bs2end
+
 ## Get/Set Robot Joint variables
 def get_env_joint_names(env,prefix='ur_'):
     """
