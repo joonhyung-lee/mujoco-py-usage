@@ -287,7 +287,7 @@ class MuJoCoParserClass(object):
         # Position of camera in world coordinates
         self.cam_pos = self.model.cam_pos0[cam_id]
 
-        return self.cam_matrix, self.cam_rot_mat, self.cam_pos, 
+        return self.cam_matrix, self.cam_rot_mat, self.cam_pos
 
     def reset(self,RESET_GLFW=False):
         """
@@ -845,10 +845,10 @@ def random_spawn_objects(
     prefix     = 'obj_',
     x_init     = -1.0,
     n_place    = 5,
-    x_range    = [0.3,1.0],
-    y_range    = [-0.5,0.5],
-    z_range    = [1.01,1.01],
-    min_dist   = 0.15,
+    x_range    = [0.5,1.5],
+    y_range    = [-0.4,0.4],
+    z_range    = [0.8,0.85],
+    min_dist   = 0.2,
     ):
     """
         Randomly spawn objects
@@ -857,12 +857,12 @@ def random_spawn_objects(
     env.reset() 
     # Place objects in a row on the ground
     obj_names = get_env_obj_names(env,prefix=prefix) # available objects
-    colors = [plt.cm.gist_rainbow(x) for x in np.linspace(0,1,len(obj_names))]
+    # colors = [plt.cm.gist_rainbow(x) for x in np.linspace(0,1,len(obj_names))]
     for obj_idx,obj_name in enumerate(obj_names):
         obj_pos   = [x_init,0.1*obj_idx,0.0]
         obj_quat  = [0,0,0,1]
-        obj_color = colors[obj_idx]
-        set_env_obj(env=env,obj_name=obj_name,obj_pos=obj_pos,obj_quat=obj_quat,obj_color=obj_color)
+        # obj_color = colors[obj_idx]
+        set_env_obj(env=env,obj_name=obj_name,obj_pos=obj_pos,obj_quat=obj_quat,obj_color=None)
     env.forward(INCREASE_TICK=False) # update object locations
 
     # Randomly place objects on the table
@@ -938,7 +938,50 @@ def display_frames_as_gif(frame_list, filename):
 print ("Done.")
 
 
+def draw_bbox(results, image, verbose=False):
+    width = 1500
+    height = 1000
 
+    for r in results:
+        # extract the bounding box (x, y)-coordinates for the AprilTag
+        # and convert each of the (x, y)-coordinate pairs to integers
+        (ptA, ptB, ptC, ptD) = r.corners
+        ptB = (int(ptB[0]), int(ptB[1]))
+        ptC = (int(ptC[0]), int(ptC[1]))
+        ptD = (int(ptD[0]), int(ptD[1]))
+        ptA = (int(ptA[0]), int(ptA[1]))
+
+        # draw the bounding box of the AprilTag detection
+        cv2.line(image, ptA, ptB, (255, 0, 0), 3)
+        cv2.line(image, ptB, ptC, (255, 0, 0), 3)
+        cv2.line(image, ptC, ptD, (255, 0, 0), 3)
+        cv2.line(image, ptD, ptA, (255, 0, 0), 3)
+
+        # draw the center (x, y)-coordinates of the AprilTag
+        (cX, cY) = (int(r.center[0]), int(r.center[1]))
+        cv2.circle(image, (cX, cY), 5, (0, 0, 255), -1)
+
+        # draw the tag family on the image
+        tagFamily = r.tag_family.decode("utf-8")
+    
+        if verbose == True:
+            cv2.putText(image, tagFamily, (ptA[0], ptA[1] - 10),
+                cv2.FONT_HERSHEY_SIMPLEX, 5.0, (255, 255, 255), 3)
+            # print("Apriltag name: {}".format(tagFamily))
+
+            x_centered = cX - width / 2
+            y_centered = -1 * (cY - height / 2)
+
+            cv2.putText(image, f"Center X coord: {x_centered}", (ptB[0] + 10, ptB[1] - 20),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.5, (125, 0, 125), 7)
+
+            cv2.putText(image, f"Center Y coord: {y_centered}", (ptB[0] + 10, ptB[1]),
+                        cv2.FONT_HERSHEY_SIMPLEX, 1.0, (125, 0, 125), 7)
+
+            cv2.putText(image, f"Tag ID: {r.tag_id}", (ptC[0] - 70, ptC[1] - 15),
+                        cv2.FONT_HERSHEY_SIMPLEX, 0.5, (125, 0, 125), 7)
+
+        cv2.circle(image, (int((width / 2)), int((height / 2))), 5, (0, 0, 255), 2)
 
 
 
