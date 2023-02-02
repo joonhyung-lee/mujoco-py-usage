@@ -826,7 +826,7 @@ def get_env_body_names(env,prefix='ur_'):
 def get_base2ee_matrix(env, link_prefix='ur_', verbose=False):
     """
         In AX=XB Equation, (extrinsic calibration) 
-        Get matrix about B that represents transformation matrix [Robot base to Robot End-Effector].
+        Get matrix about B that represents sequenced transformation operations on [Robot base to Robot End-Effector].
     """
     # ur_links = ['ur_base_link', 'ur_shoulder_link', 'ur_upper_arm_link', 'ur_forearm_link', 'ur_wrist_1_link', 'ur_wrist_2_link', 'ur_wrist_3_link']
 
@@ -1071,7 +1071,7 @@ def draw_bbox(results, image, verbose=False):
         cv2.circle(image, (int((width / 2)), int((height / 2))), 5, (0, 0, 255), 2)
 
 
-def convert_from_uvd(u, v, d):
+def convert_from_uvd(u, v, d, cam_matrix):
     """
         pxToMetre: Constant, depth scale factor
         cx: Center x of Camera
@@ -1079,11 +1079,14 @@ def convert_from_uvd(u, v, d):
         focalx: Focal length
         focaly: Focal length 
     """
+
     pxToMetre = 1
-    focalx = 1207.10
-    focaly =  -1207.10
-    cx = 750.0
-    cy = 500.0
+
+    focalx = cam_matrix[0][0]
+    cx = cam_matrix[0][2]
+    focaly = cam_matrix[1][1]
+    cy = cam_matrix[1][2]
+
     d *= pxToMetre
     x_over_z = (cx - u) / focalx
     y_over_z = (cy - v) / focaly
@@ -1123,3 +1126,24 @@ def compute_xyz(depth_img, cam_matrix):
     # Order of y_ e is reversed !
     xyz_img = np.stack([-y_e, x_e, z_e], axis=-1) # Shape: [H x W x 3]
     return xyz_img
+
+## Need to check
+def d2_to_d3(x = 0, y = 0):
+    """
+    Conversion about 2D image to 3D point
+    """
+
+    rot = 0
+
+    ## x and y varies from -1 to 1
+    ## return XYZ in the frame attach to camera link allined with base link
+
+    fx = 1/math.tan(math.radians(45.0/2.0))
+    theta_x = math.radians(rot) + math.atan2(x, fx)
+    X = 1.5 * math.tan(theta_x)
+    Z = 1.5
+    fy = 1/math.tan(math.radians(45.0/2.0))
+    theta_y = math.atan2(y,fy)
+    Y = math.tan(theta_y) * 1.5 / math.cos(theta_x)
+    
+    return X,Y,Z
