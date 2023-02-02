@@ -12,7 +12,8 @@ And this is a package for RL task using a manipulator in Mujoco.
 - Triangulation about multiple view: demo_ur_06_triangulation.ipynb
 - Compare apriltag pose using `apriltag`, `solvepnp` libraries: demo_ur_07_pnp.ipynb
 - Extrinsic calibration(Solve AX=XB): demo_ur_08_calibration.ipynb
+- Add PID Controller : demo_ur_09_pid.ipynb
 
 ### Others
 - Solving AX=XB, Extrinsic Calibration: demo_calibration.ipynb
-- Planning methods: demo_planning.ipynb
+- Robotics Planning methods: demo_planning.ipynb
