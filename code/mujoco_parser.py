@@ -1147,3 +1147,15 @@ def d2_to_d3(x = 0, y = 0):
     Y = math.tan(theta_y) * 1.5 / math.cos(theta_x)
     
     return X,Y,Z
+
+def rotation_matrix_to_spherical_rotation(R):
+    # Extract rotation about the z-axis
+    azimuth = np.arctan2(R[1,0], R[0,0])
+
+    # Extract rotation about the y-axis
+    elevation = np.arctan2(-R[2,0], np.sqrt(R[2,1]**2 + R[2,2]**2))
+
+    # Extract rotation about the x-axis
+    roll = np.arctan2(R[2,1], R[2,2])
+    
+    return azimuth, elevation
