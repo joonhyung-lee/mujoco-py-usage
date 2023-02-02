@@ -4,6 +4,7 @@ import matplotlib.pyplot as plt
 from scipy.spatial.distance import cdist
 from screeninfo import get_monitors # get monitor size
 from util import r2w,trim_scale,quat2r,rpy2r,pr2t
+import apriltag
 
 DEFAULT_SIZE = 500
 
@@ -68,7 +69,11 @@ class MuJoCoParserClass(object):
         self.n_pri_joint     = len(self.pri_joint_idxs)
         self.geom_names      = list(self.sim.model.geom_names)
         self.n_geom          = len(self.geom_names)
-        
+
+        # # of robot joints
+        self.n_robot_joint  = len(get_env_body_names(self))
+        self.n_joint_idxs   = np.array([i for i in range(self.n_robot_joint)], dtype="int32")
+
     def print_env_info(self):
         """
             Print env info
@@ -843,6 +848,54 @@ def get_base2ee_matrix(env, link_prefix='ur_', verbose=False):
     
     return T_bs2end
 
+# Get apriltag pose
+def get_apriltag_pose(env, img, img_depth):
+    """
+        In AX=XB Equation, (extrinsic calibration) 
+        Get matrix about A that represents detected AprilTag pose in camera coordinate.
+    """
+    detector = apriltag.Detector()
+    img_BGR = cv2.cvtColor(img, cv2.COLOR_RGB2BGR)
+    img_Gray = cv2.cvtColor(img_BGR, cv2.COLOR_BGR2GRAY)
+
+    results = detector.detect(img_Gray)
+
+    cam_matrix, _, _ = env.camera_matrix_and_pose(width=env.render_width, height=env.render_height, camera_name="main1")
+
+    fx = cam_matrix[0][0]
+    cx = cam_matrix[0][2]
+    fy = cam_matrix[1][1]
+    cy = cam_matrix[1][2]
+
+    cam_params = [fx, fy, cx, cy]
+
+    img_real = np.array(env.depth_2_meters(img_depth))
+    img_xyz = compute_xyz(img_real, cam_matrix=cam_matrix)
+
+    # Render the detections on the image
+    if len(results) > 0:
+        draw_bbox(results, img, verbose=False)
+
+        for r in results:
+            pose, e0, e1 = detector.detection_pose(detection=r, camera_params=cam_params, tag_size=0.06)    # should check tag_size
+            
+            poseRotation = pose[:3, :3]
+            poseTranslation = pose[:3, 3]
+    
+            center_point = [int(r.center[i]) for i in range(2)]    # in int type
+
+            rot_april = pose[:3, :3]
+            center_3d = np.array([img_xyz[center_point[1]][center_point[0]]])   # order of pixel array is y, x 
+
+            T_april = np.concatenate((rot_april, center_3d.T), axis=1)  # 4x3 matrix
+            T_april = np.concatenate((T_april, np.array([[0,0,0,1]])), axis=0)  # 4x4 matrix
+
+        return T_april
+
+    else:   # if any detected marker is none, return None.
+        return None
+
+
 ## Get/Set Robot Joint variables
 def get_env_joint_names(env,prefix='ur_'):
     """
@@ -1018,5 +1071,55 @@ def draw_bbox(results, image, verbose=False):
         cv2.circle(image, (int((width / 2)), int((height / 2))), 5, (0, 0, 255), 2)
 
 
+def convert_from_uvd(u, v, d):
+    """
+        pxToMetre: Constant, depth scale factor
+        cx: Center x of Camera
+        cy: Center y of Camera
+        focalx: Focal length
+        focaly: Focal length 
+    """
+    pxToMetre = 1
+    focalx = 1207.10
+    focaly =  -1207.10
+    cx = 750.0
+    cy = 500.0
+    d *= pxToMetre
+    x_over_z = (cx - u) / focalx
+    y_over_z = (cy - v) / focaly
+    z = d / np.sqrt(1. + x_over_z**2 + y_over_z**2)
+    x = x_over_z * z
+    y = y_over_z * z
 
+    return -y, x, z
 
+# def compute_xyz(depth_img, fx, fy, px, py, height, width):
+#     indices = np.indices((height, width), dtype=np.float32).transpose(1,2,0)
+#     z_e = depth_img
+#     x_e = (indices[..., 1] - px) * z_e / fx
+#     y_e = (indices[..., 0] - py) * z_e / fy
+    
+#     # Order of y_ e is reversed !
+#     xyz_img = np.stack([-y_e, x_e, z_e], axis=-1) # Shape: [H x W x 3]
+#     return xyz_img
+
+def compute_xyz(depth_img, cam_matrix):
+
+    # , fx, fy, px, py, height, width
+    fx = cam_matrix[0][0]
+    cx = cam_matrix[0][2]
+    fy = cam_matrix[1][1]
+    cy = cam_matrix[1][2]
+
+    height = 1000
+    width = 1500
+
+    indices = np.indices((height, width), dtype=np.float32).transpose(1, 2, 0)
+    
+    z_e = depth_img
+    x_e = (indices[..., 1] - cx) * z_e / fx
+    y_e = (indices[..., 0] - cy) * z_e / fy
+    
+    # Order of y_ e is reversed !
+    xyz_img = np.stack([-y_e, x_e, z_e], axis=-1) # Shape: [H x W x 3]
+    return xyz_img
