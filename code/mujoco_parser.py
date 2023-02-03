@@ -838,14 +838,17 @@ def get_base2ee_matrix(env, link_prefix='ur_', verbose=False):
             print(link)
         p_link = env.get_p_body(body_name=link)  # 3x3
         R_link = env.get_R_body(body_name=link)  # 3x1
+
+        # T_link = pr2t(p_link, R_link)
         T_link = cv2.hconcat((R_link, p_link))      # 3x4
         T_link = np.vstack((T_link, np.array([0,0,0,1])))   # 4x4
-        
         T_links.append(T_link)
 
+    # start at 'ur_base_link'
+    T_bs2end = T_links[0]
     for i in range(len(T_links)-1):
-        T_bs2end = np.matmul(T_links[i], T_links[i+1])
-    
+        T_bs2end = np.matmul(T_bs2end, T_links[i+1])
+
     return T_bs2end
 
 # Get apriltag pose
