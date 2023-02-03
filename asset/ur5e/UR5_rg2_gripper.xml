@@ -115,12 +115,12 @@ Control Engineering / Automation Engineering
         <exclude body1="ur_forearm_link" body2="ur_wrist_1_link"/>
         <exclude body1="ur_wrist_1_link" body2="ur_wrist_2_link"/>
         <exclude body1="ur_wrist_2_link" body2="ur_wrist_3_link"/>
-        <exclude body1="rg2_gripper_base_link" body2="ur_wrist_3_link"/>
+        <exclude body1="ur_rg2_gripper_base_link" body2="ur_wrist_3_link"/>
 
-        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger1_finger_link"/>
-        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger2_finger_link"/>
-        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger1_inner_knuckle_link"/>
-        <exclude body1="rg2_gripper_base_link" body2="rg2_gripper_finger2_inner_knuckle_link"/>
+        <exclude body1="ur_rg2_gripper_base_link" body2="rg2_gripper_finger1_finger_link"/>
+        <exclude body1="ur_rg2_gripper_base_link" body2="rg2_gripper_finger2_finger_link"/>
+        <exclude body1="ur_rg2_gripper_base_link" body2="rg2_gripper_finger1_inner_knuckle_link"/>
+        <exclude body1="ur_rg2_gripper_base_link" body2="rg2_gripper_finger2_inner_knuckle_link"/>
         
         <exclude body1="rg2_gripper_finger1_finger_link" body2="rg2_gripper_finger1_inner_knuckle_link"/>
         <exclude body1="rg2_gripper_finger2_finger_link" body2="rg2_gripper_finger2_inner_knuckle_link"/>
@@ -142,9 +142,6 @@ Control Engineering / Automation Engineering
         <camera name="main1" mode="fixed" pos="0.7 0 4.0" quat="1 0 0 1"/>
         <camera name="tracking" mode="track" pos="0.0 0 4.0" quat="1 0 0 1"/>
 
-        <!-- target E.E. -->
-        <!-- <camera name="ee-follower" mode="targetbody" target="rg2_gripper_base_link" pos="0.8 0.0 1.5" quat="0.707107 0 0 0.707107"/> -->
-                                                                <!-- pos="0 0.0823 0" quat="0.707107 0 0 0.707107" -->
         <!--Floor Property-->
         <geom name='floor' material="floor_mat" pos='0 0 0' size='2.5 2.5 0.1'  type='plane' />
 
@@ -272,12 +269,9 @@ Control Engineering / Automation Engineering
                                         <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="0.1879" diaginertia="0.033822 0.0171365 0.0171365" />
                                         <joint name="ur_wrist_3_joint" class="UR5e" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
                                         <geom type="mesh"  mesh="wrist3" material="ur5_mat"/>
-                                        <!--GRIPPER-->
-                                        <!-- <camera name="cam-mount" mode="targetbody" target="rg2_gripper_base_link" pos="0.0 0.0 0.15" quat="1 0 0 0"/> -->
-                                        <!-- <camera name="cam-mount" mode="targetbodycom" target="rg2_gripper_base_link" pos="0.0 0.1 -0.1" quat="1 0 0 0"/> -->
+                                        <!-- Camera -->
                                         <camera name="cam-mount-2" mode="targetbodycom" target="rg2_gripper_finger1_inner_knuckle_link" pos="0.0 0.23 -0.18" quat="1 0 0 0"/>
-                                        <!-- <camera name="cam-mount2" mode="trackcom" target="rg2_gripper_finger1_inner_knuckle_link" pos="0.0 0.2 0.0" xyaxes="1 0 0 0 0 1"/> -->
-                                        <body name="rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
+                                        <body name="ur_rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
                                             <inertial pos="-0.000118835633453291 4.70054905894546E-06 0.0572680906518555"  quat="0.707058 0.00723369 0.00723345 0.707081" mass="0.199035856566616" diaginertia="0.000170600248402307 0.000213152093040191 5.59878626220752E-05" />
                                             <geom type="mesh" rgba="0.1 0.1 0.1 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_base_link" />
 
