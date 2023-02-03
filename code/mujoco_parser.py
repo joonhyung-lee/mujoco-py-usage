@@ -823,33 +823,40 @@ def get_env_body_names(env,prefix='ur_'):
 
     return body_names
     
-def get_base2ee_matrix(env, link_prefix='ur_', verbose=False):
+def get_homogeneous_matrix(env, from_link='ur_base_link', to_link='ur_rg2_gripper_base_link', verbose=False):
     """
         In AX=XB Equation, (extrinsic calibration) 
-        Get matrix about B that represents sequenced transformation operations on [Robot base to Robot End-Effector].
+        Get matrix about B that represents sequenced transformation operations on ['from link' to 'to link'].
     """
-    # ur_links = ['ur_base_link', 'ur_shoulder_link', 'ur_upper_arm_link', 'ur_forearm_link', 'ur_wrist_1_link', 'ur_wrist_2_link', 'ur_wrist_3_link']
+    # world coordinate T_from
+    p_from = env.get_p_body(body_name=from_link)  # 3x3
+    R_from = env.get_R_body(body_name=from_link)  # 3x1
+    T_from = cv2.hconcat((R_from, p_from))      # 3x4
+    T_from = np.vstack((T_from, np.array([0,0,0,1])))   # 4x4
 
-    link_names = get_env_body_names(env, link_prefix)
-    T_links = []
+    # world coordinate T_to
+    p_to = env.get_p_body(body_name=to_link)  # 3x3
+    R_to = env.get_R_body(body_name=to_link)  # 3x1
+    T_to = cv2.hconcat((R_to, p_to))      # 3x4
+    T_to = np.vstack((T_to, np.array([0,0,0,1])))   # 4x4
+    
+    # Homogeneous matrix 'from link' to 'to link'
+    p_from_inv = -np.linalg.inv(R_from) @ p_from
+    R_from_inv = np.linalg.inv(R_from)
+    T_from_inv = cv2.hconcat((R_from_inv, p_from_inv))      # 3x4
+    T_from_inv = np.vstack((T_from_inv, np.array([0,0,0,1])))   # 4x4
 
-    for idx, link in enumerate(link_names):
-        if verbose == True:
-            print(link)
-        p_link = env.get_p_body(body_name=link)  # 3x3
-        R_link = env.get_R_body(body_name=link)  # 3x1
+    T_from2to = T_from_inv @ T_to
 
-        # T_link = pr2t(p_link, R_link)
-        T_link = cv2.hconcat((R_link, p_link))      # 3x4
-        T_link = np.vstack((T_link, np.array([0,0,0,1])))   # 4x4
-        T_links.append(T_link)
+    if verbose:
+        print(f"Transformation matrix about 'from link': {from_link}")
+        print(T_from)
+        print(f"Transformation matrix about 'to link': {to_link}")
+        print(T_to)
+        print(f"Transformation matrix about 'from2to' link: {from_link} -> {to_link}")
+        print(T_from2to)
 
-    # start at 'ur_base_link'
-    T_bs2end = T_links[0]
-    for i in range(len(T_links)-1):
-        T_bs2end = np.matmul(T_bs2end, T_links[i+1])
-
-    return T_bs2end
+    return T_from2to
 
 # Get apriltag pose
 def get_apriltag_pose(env, img, img_depth):
@@ -1151,6 +1158,7 @@ def d2_to_d3(x = 0, y = 0):
     
     return X,Y,Z
 
+## Need to check
 def rotation_matrix_to_spherical_rotation(R):
     # Extract rotation about the z-axis
     azimuth = np.arctan2(R[1,0], R[0,0])
