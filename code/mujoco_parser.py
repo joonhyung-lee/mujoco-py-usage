@@ -253,7 +253,7 @@ class MuJoCoParserClass(object):
 
         return self.cam_infos
 
-    def depth_2_meters(self, depth_image):
+    def depth2meters(self, depth_image):
         """
         Converts the depth array delivered by MuJoCo (values between 0 and 1) into actual m values.
 
