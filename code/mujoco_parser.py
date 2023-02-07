@@ -879,7 +879,8 @@ def get_apriltag_pose(env, img, img_depth):
 
     cam_params = [fx, fy, cx, cy]
 
-    img_real = np.array(env.depth_2_meters(img_depth))
+    img_real = np.array(env.depth2meters(img_depth))
+    # img_xyz = compute_xyz(img_depth, cam_matrix=cam_matrix)
     img_xyz = compute_xyz(img_real, cam_matrix=cam_matrix)
 
     # Render the detections on the image
