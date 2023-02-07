@@ -1,4 +1,5 @@
 import numpy as np 
+import math
 
 def rot_e():
     e = np.array([[1, 	       0, 	      0],
@@ -199,3 +200,30 @@ def calibrate(A, B):
     b_x = np.dot(np.linalg.inv(np.dot(C.T, C)), np.dot(C.T, d))     # translational info
 
     return theta_x, b_x
+
+
+def r2axisangle(T):
+    """
+        T to axis-angle representation.
+    """   
+    R = T[:3,:3]
+
+    theta_axisangle = math.acos((np.trace(R)-1)/2)    # in rad unit.
+
+    prefix_multiplier = 1 / (2*math.sin(theta_axisangle))
+
+    rx = prefix_multiplier * (R[2][1] - R[1][2]) * theta_axisangle
+    ry = prefix_multiplier * (R[0][2] - R[2][0]) * theta_axisangle
+    rz = prefix_multiplier * (R[1][0] - R[0][1]) * theta_axisangle
+
+    rot_axisangle = np.array([rx, ry, rz])
+
+    return rot_axisangle, theta_axisangle
+
+def skew(R):    # return ske
+    """
+        Convert to skew matrix.
+    """   
+    return np.array([[0, -R[2], R[1]],
+                     [R[2], 0, -R[0]],
+                     [-R[1], R[0], 0]])
