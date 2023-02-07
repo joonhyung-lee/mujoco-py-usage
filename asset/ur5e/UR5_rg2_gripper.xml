@@ -168,7 +168,8 @@ Control Engineering / Automation Engineering
         </body> 
 
         <!-- AprilTag Marker -->
-        <body name="box_checker" pos="1.3 0.0 0.77">    <!-- (x, y, z) pose -->
+        <body name="box_checker" pos="1.3 0.0 0.77">   <!-- (x, y, z) pose -->
+        <!-- <body name="box_checker" pos="0.7 0.0 0.77">    (x, y, z) pose -->
             <!-- <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_checker_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/> -->
             <!-- <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_checker_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/> -->
             <!-- <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_checker_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/> -->
@@ -176,6 +177,16 @@ Control Engineering / Automation Engineering
             <joint type="hinge" axis="0 1 0" damping="0.007" name="box_checker_y" />
             <joint type="hinge" axis="0 0 1" damping="0.007" name="box_checker_z" />
             <geom name="box_checker" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.01" type="box"/>
+        </body>
+
+        <body name="box_checker_test" pos="1.5 -0.25 1.8">    <!-- (x, y, z) pose -->
+            <!-- <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_checker_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/> -->
+            <!-- <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_checker_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/> -->
+            <!-- <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_checker_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/> -->
+            <joint type="hinge" axis="1 0 0" damping="0.007" name="box_checker_test_x" />
+            <joint type="hinge" axis="0 1 0" damping="0.007" name="box_checker_test_y" />
+            <joint type="hinge" axis="0 0 1" damping="0.007" name="box_checker_test_z" />
+            <geom name="box_checker_test" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.0607" type="box"/>
         </body>
 
         <!-- Non-prhensile Task Objects -->
