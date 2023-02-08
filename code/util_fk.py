@@ -202,7 +202,7 @@ def calibrate(A, B):
     return theta_x, b_x
 
 
-def r2axisangle(T):
+def T2axisangle(T):
     """
         T to axis-angle representation.
     """   

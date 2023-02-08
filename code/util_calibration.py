@@ -1,6 +1,6 @@
 import numpy as np
 import scipy
-from util_fk import r2axisangle, skew
+from util_fk import T2axisangle, skew
 
 
 def log_group_skew(T):
@@ -129,8 +129,8 @@ def get_extrinsic_calibration_tsai(A, B):
 
     for Ai, Bi in zip(A, B):
         # Transform the matrices to their axis-angle representation
-        r_gij, theta_gij = r2axisangle(Ai)
-        r_cij, theta_cij = r2axisangle(Bi)
+        r_gij, theta_gij = T2axisangle(Ai)
+        r_cij, theta_cij = T2axisangle(Bi)
 
         # Tsai uses a modified version of the angle-axis representation
         Pgij = 2*np.sin(theta_gij/2.)*r_gij
