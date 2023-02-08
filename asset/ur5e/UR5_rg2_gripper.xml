@@ -179,7 +179,7 @@ Control Engineering / Automation Engineering
             <geom name="box_checker" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.01" type="box"/>
         </body>
 
-        <body name="box_checker_test" pos="1.5 -0.25 1.8">    <!-- (x, y, z) pose -->
+        <body name="box_checker_test" pos="1.5 -0.09 1.62">    <!-- (x, y, z) pose -->
             <!-- <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_checker_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/> -->
             <!-- <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_checker_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/> -->
             <!-- <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_checker_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/> -->
@@ -251,6 +251,7 @@ Control Engineering / Automation Engineering
 
         <!--Robot UR5-->
         <body name="box_link" pos="0 0 0.395">
+            <!-- Robot base table -->
             <geom size=".36 .36 .395" pos ="0 0 0" type="box" material="bench_mat2"/>
             <inertial pos="0 0 0" mass="1000" diaginertia="0 0 0" />
             <body name="ur_base_link" pos="0.18 0 0.395">
