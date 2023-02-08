@@ -1135,7 +1135,7 @@ def compute_xyz(depth_img, cam_matrix):
     y_e = (indices[..., 0] - cy) * z_e / fy
     
     # Order of y_ e is reversed !
-    xyz_img = np.stack([-y_e, x_e, z_e], axis=-1) # Shape: [H x W x 3]
+    xyz_img = np.stack([-y_e, -x_e, z_e], axis=-1) # Shape: [H x W x 3]
     return xyz_img
 
 ## Need to check
