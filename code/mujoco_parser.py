@@ -1171,3 +1171,4 @@ def rotation_matrix_to_spherical_rotation(R):
     roll = np.arctan2(R[2,1], R[2,2])
     
     return azimuth, elevation
+
