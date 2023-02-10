@@ -1,5 +1,6 @@
 import numpy as np 
 import math
+import scipy
 
 def rot_e():
     e = np.array([[1, 	       0, 	      0],
@@ -227,3 +228,38 @@ def skew(R):    # return ske
     return np.array([[0, -R[2], R[1]],
                      [R[2], 0, -R[0]],
                      [-R[1], R[0], 0]])
+
+
+def T2aa(T):
+    T = np.array(T, dtype=np.float64, copy=False)
+
+    rot = T[:3, :3]
+    # direction: unit eigenvector of R33 corresponding to eigenvalue of 1
+    w, W = np.linalg.eig(rot.T)
+    
+    i = np.where(abs(np.real(w) - 1.0) < 1e-8)[0]
+    if not len(i):
+        raise ValueError("no unit eigenvector corresponding to eigenvalue 1")
+    
+    axis = np.real(W[:, i[-1]]).squeeze()
+    # point: unit eigenvector of R corresponding to eigenvalue of 1
+    w, Q = np.linalg.eig(T)
+    
+    i = np.where(abs(np.real(w) - 1.0) < 1e-8)[0]
+    if not len(i):
+        raise ValueError("no unit eigenvector corresponding to eigenvalue 1")
+
+    point = np.real(Q[:, i[-1]]).squeeze()
+    point /= point[3]
+
+    # rotation angle depending on axis
+    cosa = (np.trace(rot) - 1.0) / 2.0
+    if abs(axis[2]) > 1e-8:
+        sina = (T[1, 0] + (cosa-1.0)*axis[0]*axis[1]) / axis[2]
+    elif abs(axis[1]) > 1e-8:
+        sina = (T[0, 2] + (cosa-1.0)*axis[0]*axis[2]) / axis[1]
+    else:
+        sina = (T[2, 1] + (cosa-1.0)*axis[1]*axis[2]) / axis[0]
+
+    angle = math.atan2(sina, cosa)
+    return axis, angle, point

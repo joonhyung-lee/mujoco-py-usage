@@ -1,6 +1,6 @@
 import numpy as np
 import scipy
-from util_fk import T2axisangle, skew
+from util_fk import T2axisangle, skew, T2aa
 
 
 def log_group_skew(T):
@@ -129,8 +129,11 @@ def get_extrinsic_calibration_tsai(A, B):
 
     for Ai, Bi in zip(A, B):
         # Transform the matrices to their axis-angle representation
-        r_gij, theta_gij = T2axisangle(Ai)
-        r_cij, theta_cij = T2axisangle(Bi)
+        # r_gij, theta_gij = T2axisangle(Ai)
+        # r_cij, theta_cij = T2axisangle(Bi)
+
+        r_gij, theta_gij, _ = T2aa(Ai)
+        r_cij, theta_cij, _ = T2aa(Bi)
 
         # Tsai uses a modified version of the angle-axis representation
         Pgij = 2*np.sin(theta_gij/2.)*r_gij
@@ -162,3 +165,28 @@ def get_extrinsic_calibration_tsai(A, B):
     X[:3, :3] = Rx
     X[:3, 3] = tx
     return X
+
+#### Method 2: Angle-axis representation. (Frank. Park, 1994)
+def get_extrinsic_calibration_frank(A, B):
+    M = np.zeros((3, 3))
+    for Ai, Bi in zip(A, B):
+        # Transform the matrices to their axis-angle representation
+        axis, angle, _ = T2aa(Ai)
+        alpha = angle*axis
+
+        axis, angle, _ = T2aa(Bi)
+        beta = angle*axis
+
+        # Compute M
+        M += np.dot(beta.reshape(3, 1), alpha.reshape(1, 3))
+    # Estimate Rx
+    Rx = np.dot(np.linalg.inv(scipy.linalg.sqrtm(np.dot(M.T, M))), M.T)
+    # Estimate tx
+    tx = estimate_translation(A, B, Rx)
+
+    # Return T
+    T = np.eye(4)
+    T[:3, :3] = Rx
+    T[:3, 3] = tx
+    
+    return T
