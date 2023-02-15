@@ -283,6 +283,7 @@ Control Engineering / Automation Engineering
                                         <geom type="mesh"  mesh="wrist3" material="ur5_mat"/>
                                         <!-- Camera -->
                                         <camera name="cam-mount-2" mode="targetbodycom" target="rg2_gripper_finger1_inner_knuckle_link" pos="0.0 0.23 -0.18" quat="1 0 0 0"/>
+                                        <!-- Gripper -->
                                         <body name="ur_rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
                                             <inertial pos="-0.000118835633453291 4.70054905894546E-06 0.0572680906518555"  quat="0.707058 0.00723369 0.00723345 0.707081" mass="0.199035856566616" diaginertia="0.000170600248402307 0.000213152093040191 5.59878626220752E-05" />
                                             <geom type="mesh" rgba="0.5 0.5 0.5 1" friction="0.8 0.8 0.8" mesh="rg2_gripper_base_link" />
