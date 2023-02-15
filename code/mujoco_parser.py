@@ -36,8 +36,11 @@ class MuJoCoParserClass(object):
         self.lookat     = np.zeros(3)
         self._viewers = {}
 
-        self.render_width = 1500
-        self.render_height = 1000
+        self.render_width = 1280
+        self.render_height = 720
+
+        # self.render_width = 1500
+        # self.render_height = 1000
 
     def _parse_xml(self):
         """
@@ -211,7 +214,7 @@ class MuJoCoParserClass(object):
             self.cam_infos = cam_infos # {"cam_distance":self.cam_distance, "cam_azimuth":self.cam_azimuth, "cam_elevation":self.cam_elevation, "cam_lookat":self.lookat}
 
         for _ in range(10):     # for updating scene bug
-            img = self.viewer.read_pixels(width=width,height=height,depth=depth_toggle)
+            img = self.viewer.read_pixels(width=self.render_width,height=self.render_height,depth=depth_toggle)
 
         if depth_toggle:
             img = cv2.flip(cv2.rotate(img[1],cv2.ROTATE_180),1)     # 0:up<->down, 1:left<->right
@@ -322,8 +325,8 @@ class MuJoCoParserClass(object):
                 cam_azimuth=cam_azimuth,cam_distance=cam_distance,
                 cam_elevation=cam_elevation,cam_lookat=cam_lookat)
         else:
-            self.viwer_width = 1000
-            self.viwer_height = 600
+            self.viwer_width = 1280
+            self.viwer_height = 720
 
     def set_viewer(self,
                    window_width  = None,
@@ -901,10 +904,10 @@ def get_apriltag_pose(env, img, img_depth):
             T_april = np.concatenate((rot_april, center_3d.T), axis=1)  # 4x3 matrix
             T_april = np.concatenate((T_april, np.array([[0,0,0,1]])), axis=0)  # 4x4 matrix
 
-        return T_april
+        return T_april, img
 
     else:   # if any detected marker is none, return None.
-        return None
+        return None, img
 
 
 ## Get/Set Robot Joint variables
@@ -1037,8 +1040,8 @@ print ("Done.")
 
 
 def draw_bbox(results, image, verbose=False):
-    width = 1500
-    height = 1000
+    width = 1280
+    height = 720
 
     for r in results:
         # extract the bounding box (x, y)-coordinates for the AprilTag
@@ -1125,8 +1128,8 @@ def compute_xyz(depth_img, cam_matrix):
     fy = cam_matrix[1][1]
     cy = cam_matrix[1][2]
 
-    height = 1000
-    width = 1500
+    height = 720
+    width = 1280
 
     indices = np.indices((height, width), dtype=np.float32).transpose(1, 2, 0)
     
