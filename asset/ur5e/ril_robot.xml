@@ -94,7 +94,7 @@
         <camera name="main1" mode="fixed" pos="0.7 0 4.0" quat="1 0 0 1"/>
 
         <!-- Blocks -->
-        <body name="table_block_right" pos="0.99 -0.47 0.8">
+        <!-- <body name="table_block_right" pos="0.99 -0.47 0.8">
             <joint type="free" damping="0.007" name="table_block_right" />
             <geom name="table_block_right" size="0.6 0.01 0.7" pos ="0.0 0. 0.0" type="box" rgba="0.2 0.2 0.2 1"/>
         </body> 
@@ -107,7 +107,7 @@
         <body name="table_block_center" pos="1.60 0.0 0.8">
             <joint type="free" damping="0.007" name="table_block_center" />
             <geom name="table_block_center" size="0.01 0.48 0.7" pos ="0.0 0. 0.0" type="box" rgba="0.2 0.2 0.2 1"/>
-        </body> 
+        </body>  -->
 
         <!-- AprilTag Marker -->
         <body name="box_checker" pos="1.3 0.0 0.77">   <!-- (x, y, z) pose -->
@@ -121,6 +121,17 @@
             <geom name="box_checker" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.01" type="box"/>
         </body>
         
+        <body name="box_checker_test" pos="1.5 -0.09 1.62">    <!-- (x, y, z) pose -->
+            <!-- <joint armature="0" axis="1 0 0" damping="0" limited="true" name="box_checker_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/> -->
+            <!-- <joint armature="0" axis="0 1 0" damping="0" limited="true" name="box_checker_y" pos="0 0 0" range="-5. 5." ref="-.1" stiffness="0" type="slide"/> -->
+            <!-- <joint armature="0" axis="0 0 1" damping="0" limited="true" name="box_checker_z" pos="0 0 0" range="-2. 2." ref="-.1" stiffness="0" type="slide"/> -->
+            <joint type="hinge" axis="1 0 0" damping="0.007" name="box_checker_test_x" />
+            <joint type="hinge" axis="0 1 0" damping="0.007" name="box_checker_test_y" />
+            <joint type="hinge" axis="0 0 1" damping="0.007" name="box_checker_test_z" />
+            <geom name="box_checker_test" pos="0 0 0" material="tablecube_apriltag_36h11" size="0.0607 0.0607 0.0607" type="box"/>
+        </body>
+
+
         <!-- Non-prhensile Task Objects -->
         <body name="obj_cylinder_1" pos="0.7 -0.1 0.86">
             <!-- <joint armature="0" axis="1 0 0" damping="0" limited="true" name="obj_cylinder_1_x" pos="0 0 0" range="-5. 5." ref=".1" stiffness="0" type="slide"/> -->
@@ -231,6 +242,7 @@
                                             <body name="ur_rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
                                                 <inertial pos="-0.000118835633453291 4.70054905894546E-06 0.0572680906518555"  quat="0.707058 0.00723369 0.00723345 0.707081" mass="0.199035856566616" diaginertia="0.000170600248402307 0.000213152093040191 5.59878626220752E-05" />
                                                 <geom type="mesh" rgba="0.5 0.5 0.5 1" friction="0.8 0.8 0.8" mesh="ur_rg2_gripper_base_link" />
+                                                <camera name="egocentric" pos="0 -0.09 0.01" xyaxes="1 0 0 0 -1 0" fovy="80"/>
 
                                                 <body name="rg2_gripper_finger1_finger_link" pos="0.0169 0.0103 0.105" quat="0 0 0 1">
                                                     <inertial pos="0.0170975 -3.93809e-10 0.0224918"   quat="0.947655 0 -0.319297 0" mass="0.0110931" diaginertia="5.59353e-06 3.96549e-06 1.88108e-06" />

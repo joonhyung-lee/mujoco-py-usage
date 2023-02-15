@@ -282,6 +282,7 @@ Control Engineering / Automation Engineering
                                         <joint name="ur_wrist_3_joint" class="UR5e" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
                                         <geom type="mesh"  mesh="wrist3" material="ur5_mat"/>
                                         <!-- Camera -->
+                                        <camera name="egocentric" pos=".09 0 0" xyaxes="0 -1 0 .1 0 1" fovy="80"/>
                                         <camera name="cam-mount-2" mode="targetbodycom" target="rg2_gripper_finger1_inner_knuckle_link" pos="0.0 0.23 -0.18" quat="1 0 0 0"/>
                                         <!-- Gripper -->
                                         <body name="ur_rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
