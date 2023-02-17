@@ -862,7 +862,7 @@ def get_homogeneous_matrix(env, from_link='ur_base_link', to_link='ur_rg2_grippe
     return T_from2to
 
 # Get apriltag pose
-def get_apriltag_pose(env, img, img_depth):
+def get_apriltag_pose(env, img, img_depth, camera_name):
     """
         In AX=XB Equation, (extrinsic calibration) 
         Get matrix about A that represents detected AprilTag pose in camera coordinate.
@@ -873,7 +873,7 @@ def get_apriltag_pose(env, img, img_depth):
 
     results = detector.detect(img_Gray)
 
-    cam_matrix, _, _ = env.camera_matrix_and_pose(width=env.render_width, height=env.render_height, camera_name="main1")
+    cam_matrix, _, _ = env.camera_matrix_and_pose(width=env.render_width, height=env.render_height, camera_name=camera_name)
 
     fx = cam_matrix[0][0]
     cx = cam_matrix[0][2]
