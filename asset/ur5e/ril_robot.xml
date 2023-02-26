@@ -1,6 +1,11 @@
 <mujoco model="rilab_robot">
-    <compiler angle="radian" meshdir="./mesh/ur5e_pedestal/" />
-    <size njmax="500" nconmax="100" />
+    <compiler angle="radian"
+              inertiafromgeom="true"
+              meshdir="mesh/ur5e_pedestal/"/>
+    <option timestep="2e-3"
+            iterations="100"
+            tolerance="1e-10"
+            impratio="10"/>
 
     <default>
         <site rgba="0.8 0.6 0.7 0.3" type="ellipsoid" group="3"/>
@@ -11,14 +16,27 @@
         </default>
     </default>
 
+    <visual>
+        <map fogstart="3" fogend="5" znear="0.05"/>
+        <quality shadowsize="2048"/>
+        <scale framelength="0.1"
+               framewidth="0.005"
+               contactwidth="0.1"
+               contactheight="0.005"
+               forcewidth="0.01"
+               />
+    </visual>
+
+
     <asset>
-        <mesh name="base" file="base.stl" />
-        <mesh name="shoulder" file="shoulder.stl" />
-        <mesh name="upperarm" file="upperarm.stl" />
-        <mesh name="forearm" file="forearm.stl" />
-        <mesh name="wrist1" file="wrist1.stl" />
-        <mesh name="wrist2" file="wrist2.stl" />
-        <mesh name="wrist3" file="wrist3.stl" />
+        <!-- Need to check -->
+        <mesh name="base" file="../visual/base.stl" />
+        <mesh name="shoulder" file="../visual/shoulder.stl" />
+        <mesh name="upperarm" file="../visual/upperarm.stl" />
+        <mesh name="forearm" file="../visual/forearm.stl" />
+        <mesh name="wrist1" file="../visual/wrist1.stl" />
+        <mesh name="wrist2" file="../visual/wrist2.stl" />
+        <mesh name="wrist3" file="../visual/wrist3.stl" />
         <mesh name="mount" file="mount.stl" scale="0.0001 0.0001 0.0001" />
         <mesh name="d435" file="d435.stl" scale="0.001 0.001 0.001" />
         
@@ -205,7 +223,7 @@
                     <joint name="ur_shoulder_pan_joint" pos="0 0 0" axis="0 0 1" limited="true" range="-3.14159 3.14159" />
                     <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="shoulder" />
                     <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="shoulder" />
-                    <body name="ur_upper_arm_link" pos="0 0.138 0" quat="0.707107 0 0.707107 0">
+                    <body name="ur_upper_arm_link" pos="0 0.13585 0" quat="0.707107 0 0.707107 0">
                         <inertial pos="0 0 0.28" mass="8.393" diaginertia="0.226891 0.226891 0.0151074" />
                         <!-- <inertial pos="0 0 0.2125" mass="8.393" diaginertia="0.133886 0.133886 0.0151074" /> -->
                         <joint name="ur_shoulder_lift_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
@@ -216,7 +234,7 @@
                             <joint name="ur_elbow_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
                             <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="forearm" />
                             <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="forearm" />
-                            <body name="ur_wrist_1_link" pos="0 0 0.392" quat="0.707107 0 0.707107 0">
+                            <body name="ur_wrist_1_link" pos="0 0 0.39225" quat="0.707107 0 0.707107 0">
                                 <inertial pos="0 0.127 0" mass="1.219" diaginertia="0.0025599 0.0025599 0.0021942" />
                                 <joint name="ur_wrist_1_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
                                 <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="wrist1" />
@@ -227,7 +245,7 @@
                                     <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="wrist2" />
                                     <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist2" />
                                     <body name="ur_wrist_3_link" pos="0 0 0.09465">
-                                        <inertial pos="-2.43112e-05 0.144318 -0.0177649" quat="0.668246 0.74394 -9.72888e-05 0.000132037" mass="0.972908" diaginertia="0.00734082 0.00627103 0.00143257" />
+                                        <inertial pos="0 0 0" quat="0.5 0.5 -0.5 0.5" mass="0.972908" diaginertia="0.00734082 0.00627103 0.00143257" />
                                         <joint name="ur_wrist_3_joint" pos="0 0 0" axis="0 1 0" limited="true" range="-3.14159 3.14159" />
                                         <geom type="mesh" contype="0" conaffinity="0" group="1" rgba="0.7 0.7 0.7 1" mesh="wrist3" />
                                         <geom type="mesh" rgba="0.7 0.7 0.7 1" mesh="wrist3" />
@@ -242,6 +260,7 @@
                                             <body name="ur_rg2_gripper_base_link" pos="0 0.08 0" quat="0. 0 0.70682518 0.70738827">
                                                 <inertial pos="-0.000118835633453291 4.70054905894546E-06 0.0572680906518555"  quat="0.707058 0.00723369 0.00723345 0.707081" mass="0.199035856566616" diaginertia="0.000170600248402307 0.000213152093040191 5.59878626220752E-05" />
                                                 <geom type="mesh" rgba="0.5 0.5 0.5 1" friction="0.8 0.8 0.8" mesh="ur_rg2_gripper_base_link" />
+                                                <!-- Camera -->
                                                 <camera name="egocentric" pos="0 -0.09 0.01" xyaxes="1 0 0 0 -1 0" fovy="80"/>
 
                                                 <body name="rg2_gripper_finger1_finger_link" pos="0.0169 0.0103 0.105" quat="0 0 0 1">
